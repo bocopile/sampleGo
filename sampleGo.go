@@ -1,4 +1,4 @@
-package sampleGo
+package main
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,7 +6,7 @@ import (
 	"sampleGo/controller/sample"
 )
 
-func sampleGo() {
+func main() {
 	r := gin.Default()
 
 	sampleGroup := r.Group("/api/sample")

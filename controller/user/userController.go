@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	errors "sampleGo/handler/error"
 	"sampleGo/models/user"
 )
 
@@ -26,7 +27,8 @@ func (ctrl *UserController) GetUserByIDHandler(c *gin.Context) {
 	// 파라미터가 존재하는지 확인
 	if id == "" {
 		log.Printf("Missing user ID parameter")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID parameter is required"})
+		appErr := errors.NewAppError(errors.ErrCodeInvalidUserID)
+		c.JSON(http.StatusBadRequest, appErr)
 		return
 	}
 

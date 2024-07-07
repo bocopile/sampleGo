@@ -8,3 +8,5 @@
   - swag init
   - go get -u github.com/swaggo/gin-swagger
   - go get -u github.com/swaggo/files
+- database
+  - go get -u github.com/go-sql-driver/mysql

@@ -3,15 +3,19 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"sampleGo/controller/login"
-	"sampleGo/controller/sample"
+	"sampleGo/controller/user"
+	"sampleGo/handler/database/mysql"
 )
 
 func main() {
 	r := gin.Default()
 
-	sampleGroup := r.Group("/api/sample")
+	// UserController 및 LoginController 인스턴스 생성
+	userController := user.NewUserController()
+
+	userGroup := r.Group("/api/user")
 	{
-		sampleGroup.GET("/result", sample.Sample)
+		userGroup.GET("/:id", userController.GetUserByIDHandler)
 	}
 
 	loginGroup := r.Group("/api/login")
@@ -19,5 +23,10 @@ func main() {
 		loginGroup.GET("/result", login.Login)
 	}
 
-	r.Run("localhost:8080")
+	if err := r.Run("localhost:8080"); err != nil {
+		panic(err)
+	}
+
+	dbManager := mysql.GetDBManager()
+	dbManager.Close()
 }

@@ -1,0 +1,21 @@
+version : "3"
+
+services :
+  mysql:
+    container_name: mysql_container
+    image: mysql:5.7
+    platform: linux/amd64
+    volumes:
+      - ./data/:/var/lib/mysql/
+      # sql data 파일이 저장될 경로 지정
+      - ./conf.d/:/etc/mysql/conf.d/
+      #- ./sql/full.sql:/docker-entrypoint-initdb.d/dump.sql
+      # import 할 backup sql 파일이 위치한 파일 경로 지정
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '0987qwer!!'
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+
+
+

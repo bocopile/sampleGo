@@ -1,32 +1,52 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"sampleGo/controller/login"
-	"sampleGo/controller/user"
-	"sampleGo/handler/database/mysql"
+	"log"
+	"net/http"
+	"sampleGo/models"
+	"sampleGo/pkg/logging"
+	"sampleGo/pkg/setting"
+	"sampleGo/routers"
 )
 
+func init() {
+	setting.Setup()
+	models.Setup()
+	logging.Setup()
+}
+
+// @title Telepathy API
+// @version 0.1.1
+// @description An example of gin
+// @termsOfService https://github.com/hallago/telepathy-server
+// @license.name MIT
+// @license.url https://github.com/hallago/telepathy-server/blob/main/LICENSE
+// @schemes http https
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name X-api-key
 func main() {
-	r := gin.Default()
+	gin.SetMode(setting.ServerSetting.RunMode)
 
-	// UserController 및 LoginController 인스턴스 생성
-	userController := user.NewUserController()
+	routersInit := routers.InitRouter()
+	readTimeout := setting.ServerSetting.ReadTimeout
+	writeTimeout := setting.ServerSetting.WriteTimeout
+	endPoint := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
+	maxHeaderBytes := 1 << 20
 
-	userGroup := r.Group("/api/user")
-	{
-		userGroup.GET("/:id", userController.GetUserByIDHandler)
+	server := &http.Server{
+		Addr:           endPoint,
+		Handler:        routersInit,
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		MaxHeaderBytes: maxHeaderBytes,
 	}
+	log.Printf("[info] start http server listening %s", endPoint)
 
-	loginGroup := r.Group("/api/login")
-	{
-		loginGroup.GET("/result", login.Login)
+	err := server.ListenAndServe()
+	if err != nil {
+		return
 	}
-
-	if err := r.Run("localhost:8080"); err != nil {
-		panic(err)
-	}
-
-	dbManager := mysql.GetDBManager()
-	dbManager.Close()
 }
